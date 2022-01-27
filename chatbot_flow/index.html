@@ -178,7 +178,7 @@
 <!-- ----------------------------------------------------- -->
 
 <h2 id="bottransfer">botTransfer</h2>
-<p>Transfere o antedimento humano. O tipo do canal é identificado automaticamente. </p>
+<p>Transfere para o antedimento humano. O tipo do canal é identificado automaticamente. </p>
 <p><b>Funcao:</b> <br />
   botTransfer($cd_servico=0, $cifra_servico=0)</p>
 <p><b>Parametros:</b> <br/>
@@ -202,9 +202,10 @@
         $telefone=$argv[2];
         $assunto=$argv[3];
 
-
         botStartChat();
-        sleep(5);
+
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot. Vou te encaminhar para um de nossos atendentes.");
+        botTransfer();
 
         botFinishChat();
 
