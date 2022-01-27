@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Start - Comunix</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Start";
+    var mkdocs_page_input_path = "chatbot_start.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Comunix</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Sobre</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Chatbot</span></p>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Start</a>
+    <ul class="current">
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_flow/">Fluxo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_updade/">Updates</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_info/">Infomações</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_pesquisa/">Pesquisa</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_useful/">Utilidades</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_exemples/">Exemplos</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Comunix</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Chatbot &raquo;</li>
+        
+      
+    
+    <li>Start</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="chatbot-comunix">Chatbot Comunix</h1>
+<h5><a href="../media/functionsBot.php" download>Clique aqui para donwload do arquivo functionsBot.php</a></h5>
+<h5><a href="../media/google_stt.py" download>Clique aqui para donwload do arquivo google_stt.py</a></h5>
+<hr />
+<p>Por padrão o chatbot estará no diretório: '/var/www/'. <br/>
+Ao acessa-lo, conterá o diretório com o nome do cliente. Podendo haver mais de 1 ambiente para o mesmo cliente. Ex: '/var/www/omni_comunix' <br/>
+Dentro do diretório do ambiente conterá diversos arquivos de configuração, entretanto haverá um diretorio chamado 'bot', onde conterá os arquivo de fluxo. Ex: '/var/www/omni_comunix/bot'<br/>
+<br/>
+O Chatbot ou Whatsapp se inicia através do Trata. Será criado uma thread para cada atendimento. <br/>
+Sempre será chamado o arquivo de no nome 'bot_thread_chat.php' para Chatbox Externo ou 'bot_thread_whats.php' para Whatsapp. <br/>
+<br/>
+Cada thread é iniciada pelo trata através de parametros, sendo eles: <br/>
+&emsp;&emsp; Id - identificador do atendimento <br/>
+&emsp;&emsp; Telefone - telefone do usuario (Whatsapp)<br/>
+&emsp;&emsp; Adicional - informação adicional <br/>
+&emsp;&emsp; Exemplos: <br/>
+&emsp;&emsp;&emsp;&emsp; php /var/www/suporte/bot/bot_thread_chat.php 699 <br/>
+&emsp;&emsp;&emsp;&emsp; php /var/www/omnisebraesp/bot/bot_thread_whats.php 42221 5561999999999</p>
+<hr />
+<p>O fluxo do bot será criado através dos arquivos de inicialização. São eles "bot_thread_chat.php" e bot_thread_whats.php <br/>
+O arquivo de funções deve ser incluído no aquivo do bot. <br/>
+Abaixo Modelo de inicio de um bot: <br/> </p>
+<pre><code>&lt;?php
+    header('Content-Type: text/html; charset=utf-8');
+    header("Access-Control-Allow-Origin: *");
+    header("Access-Control-Allow-Headers: Content-Type");
+    include dirname(__FILE__).'/functionsBot.php';
+    error_reporting(1);
+
+    $id=$argv[1];
+    $telefone=$argv[2];
+    $assunto=$argv[3];
+
+    botStartChat();
+
+?&gt;
+</code></pre>
+<hr />
+<p>As funções a baixo geram log em '/var/log/chatbot_log/': <br/>
+&emsp;&emsp; botUpdateMsgBot <br/>
+&emsp;&emsp; botUpdateCTI <br/>
+&emsp;&emsp; botUpdateAgent <br/>
+&emsp;&emsp; botRegistroPesquisa <br/>
+&emsp;&emsp; botUpdateMsgSophia  (Função automática ao usar a função 'botFaq') <br/>
+&emsp;&emsp; botVerificaHorarioFormulario (Função automática ao usar a função 'botTransfer') <br/></p>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../chatbot_flow/" class="btn btn-neutral float-right" title="Fluxo">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href=".." class="btn btn-neutral" title="Sobre"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../chatbot_flow/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

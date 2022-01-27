@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Exemplos - Comunix</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Exemplos";
+    var mkdocs_page_input_path = "chatbot_exemples.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Comunix</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Sobre</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Chatbot</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_start/">Start</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_flow/">Fluxo</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_updade/">Updates</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_info/">Infomações</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_pesquisa/">Pesquisa</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_useful/">Utilidades</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Exemplos</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#menu-simples">Menu Simples</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#menu-com-utilizacao-da-sophia">Menu com utilização da Sophia</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Comunix</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Chatbot &raquo;</li>
+        
+      
+    
+    <li>Exemplos</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="exemplos">Exemplos</h1>
+<h2 id="menu-simples">Menu Simples</h2>
+<p>Simples menu com registro das opções nos relatórios:</p>
+<pre><code>    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        $bot_ura = "Chatbot Comunix";
+        $cti = 0_0_0;
+
+        botStartChat();
+
+        menu_principal:
+            $bot_menu = "Menu Principal";
+
+            $menu = array("Escolha uma das opções",
+                          "Financeiro",
+                          "Comercial");
+
+            botInsertButtom($menu);
+
+            menu_principal_getfull:
+            $text = botGetFull();
+            $op = $text;
+
+            switch($op){
+                case '1':
+                case $menu[1]:
+                    $bot_opcao = $menu[1];
+                    botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti);
+                    botTransfer();
+                    break;
+
+                case '2':
+                case $menu[2]:
+                    $bot_opcao = $menu[2];
+                    botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti);
+                    botTransfer();
+                    break;
+
+                default:
+                    botUpdateMsgBot($bot_ura,$bot_menu,"i",$cti);
+                    botInsertMsg("Desculpe, não entendi. Poderia tentar novamente?");
+                    goto menu_principal_getfull;
+
+            }
+
+        botFinishChat();
+
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="menu-com-utilizacao-da-sophia">Menu com utilização da Sophia</h2>
+<p>Simples menu com com utilização da sophia <br/></p>
+<p>Suponha que o arquivo de dicionário '/home/extend/sophia/menu_principal.ai' esteja configurado da seguinte maneira:</p>
+<pre><code>        //------FINANCEIRO---------
+        financeiro:#menu_principal#op_financeiro
+        contas:#menu_principal#op_financeiro
+        valores:#menu_principal#op_financeiro
+        valor:#menu_principal#op_financeiro
+        minha;conta:#menu_principal#op_financeiro
+
+        //------COMERCIAL---------
+        produtos:#menu_principal#op_comercial
+        produto:#menu_principal#op_comercial
+        comprar:#menu_principal#op_comercial
+        itens:#menu_principal#op_comercial
+</code></pre>
+<p>O menu ficaria assim: </p>
+<pre><code>    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        $bot_ura = "Chatbot Comunix";
+        $cti = 0_0_0;
+
+        $dic_menu_principal = "/home/extend/sophia/menu_principal.ai";
+
+        botStartChat();
+
+        menu_principal:
+            $bot_menu = "Menu Principal";
+
+            $menu = array("Escolha uma das opções",
+                          "Financeiro",
+                          "Comercial");
+
+            botInsertButtom($menu);
+
+            menu_principal_getfull:
+            $text = botGetFull();
+            $op = botFaq($text, $dic_menu_principal);
+
+            switch($op){
+                case '1':
+                case #menu_principal#op_financeiro:
+                    $bot_opcao = $menu[1];
+                    botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti);
+                    botTransfer();
+                    break;
+
+                case '2':
+                case #menu_principal#op_comercial:
+                    $bot_opcao = $menu[2];
+                    botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti);
+                    botTransfer();
+                    break;
+
+                default:
+                    botUpdateMsgBot($bot_ura,$bot_menu,"i",$cti);
+                    botInsertMsg("Desculpe, não entendi. Poderia tentar novamente?");
+                    goto menu_principal_getfull;
+
+            }
+
+        botFinishChat();
+
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../chatbot_useful/" class="btn btn-neutral" title="Utilidades"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../chatbot_useful/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Fluxo - Comunix</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
+
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Fluxo";
+    var mkdocs_page_input_path = "chatbot_flow.md";
+    var mkdocs_page_url = null;
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> Comunix</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Sobre</a>
+                    </li>
+                </ul>
+                <p class="caption"><span class="caption-text">Chatbot</span></p>
+                <ul class="current">
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_start/">Start</a>
+                    </li>
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Fluxo</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#botstartchat">botStartChat</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botfinishchat">botFinishChat</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#bottransfer">botTransfer</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botinsertmsg">botInsertMsg</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botinsertbuttom">botInsertButtom</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botinsertmedia">botInsertMedia</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botinsertpassword">botInsertPassword</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botgetfull">botGetFull</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botfaq">botFaq</a>
+    </li>
+    </ul>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_updade/">Updates</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_info/">Infomações</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_pesquisa/">Pesquisa</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_useful/">Utilidades</a>
+                    </li>
+                    <li class="toctree-l1"><a class="reference internal" href="../chatbot_exemples/">Exemplos</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">Comunix</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+        
+          <li>Chatbot &raquo;</li>
+        
+      
+    
+    <li>Fluxo</li>
+    <li class="wy-breadcrumbs-aside">
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+
+          <div role="main">
+            <div class="section">
+              
+                <h1 id="fluxo">Fluxo</h1>
+<h2 id="botstartchat">botStartChat</h2>
+<p>Inicia o Chatbot </p>
+<p><b>Funcao:</b> <br />
+  botStartChat()</p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botfinishchat">botFinishChat</h2>
+<p>finaliza o Chatbot</p>
+<p><b>Funcao:</b> <br />
+  botFinishChat()</p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        sleep(5);
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="bottransfer">botTransfer</h2>
+<p>Transfere o antedimento humano. O tipo do canal é identificado automaticamente. </p>
+<p><b>Funcao:</b> <br />
+  botTransfer($cd_servico=0, $cifra_servico=0)</p>
+<p><b>Parametros:</b> <br/>
+  <code>$cd_servico</code> - Int -&gt; <br/>
+   &emsp;&emsp; Codigo do servico que será enviado. Ex: 545<br/>
+   &emsp;&emsp; Envia para o serviço caso preenchido. <br/>
+  <code>$cifra_servico</code> - Int -&gt; <br/>
+   &emsp;&emsp; Cifra do servico que será enviado. Ex: 1101<br/>
+   &emsp;&emsp; Verifica o formulário de serviço. <br/>
+   &emsp;&emsp;&emsp;&emsp; Local json: /home/extend/servico/1101/1101.json. <br/>
+   &emsp;&emsp;&emsp;&emsp; Obs: Para ativar apenas o formulário de serviço, basta configurar o $cd_servico=0. <br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        sleep(5);
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botinsertmsg">botInsertMsg</h2>
+<p>Envia mensagem de texto para o usuário</p>
+<p><b>Funcao:</b> <br />
+  botInsertMsg($msg)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$msg</code> - String  <br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botinsertbuttom">botInsertButtom</h2>
+<p>Envia Menu de opção para o usuário</p>
+<p><b>Funcao:</b> <br />
+  botInsertButtom($btn,$wpp_prefix=1)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$btn</code> - Array -&gt; <br/>
+  &emsp;&emsp; O primeiro indice do array será sempre o título. <br/>
+  &emsp;&emsp; Caso não tenha título, configurar como "" <br/>
+  <code>$wpp_prefix</code> - Int -&gt; <br/> 
+  &emsp;&emsp; Gera numeração na frente de cada opção quando está no Whatsapp <br/>
+  &emsp;&emsp; Ativado por padrão. Configurar 0 para retirar <br/></p>
+<pre><code>Exemplo 1: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        $menu = array("Escolha uma das opções",
+                      "Financeiro",
+                      "Comercial");
+
+        botInsertButtom($menu);
+
+        botFinishChat();
+
+    ?&gt;
+
+---------------------------------------------------------------
+Exemplo 2: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        $menu = array("Escolha uma das opções",
+                      "1 - Financeiro",
+                      "2 - Comercial");
+
+        botInsertButtom($menu,0);
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botinsertmedia">botInsertMedia</h2>
+<p>Envia arquivo de media para o usuário</p>
+<p><b>Funcao:</b> <br />
+  botInsertMedia($file)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$file</code> - String -&gt; <br/>
+  &emsp;&emsp; Informar apenas o nome do arquivo. <br/>
+  &emsp;&emsp; local obrigatório dos arquivos: /var/www/nome_cliente/bot/media/send/ <br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot.");
+        botInsertMsg("Vamos te enviar um de nossos vídeos auxiliáres");
+
+        botInsertMedia("video_info.mp4");
+        sleep(2);
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botinsertpassword">botInsertPassword</h2>
+<p>Envia campo no formato de senha. Campo com caracteres mascarados.<br/>
+A Função trava o campo de digitação do usuário, forçando-o a digitar no campo de senha. <br/>
+Para destravar o campo de digitação deve ser enviado o comando 'botInsertMsg("Ö!Ö")' apos o uso. <br/>
+<br/>
+IMPORTANTE: Função <b>não</b> está disponível para Whatsapp. Caso utilizado no Whatsapp, será enviado uma mensagem normal. <br/></p>
+<p><b>Funcao:</b> <br />
+  botInsertPassword($msg)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$file</code> - String <br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+
+        botInsertPassword("Por favor, digite a sua senha");
+
+        $text = botGetFull();
+        botInsertMsg("Ö!Ö")
+
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botgetfull">botGetFull</h2>
+<p>Captura a digitação do usuário. <br/> <br/>
+Configuração padrão em caso do uso da função sem parâmetros. <br/>
+&emsp;&emsp; 60 segundos <br/>
+&emsp;&emsp; 3 repetições <br/>
+&emsp;&emsp; Mensagem de repetição: "Oi você ainda está por ai? Por favor escolha uma das opções" <br/>
+&emsp;&emsp; Mensagem da 3° repetição: "Agradecemos seu contato!" <br/></p>
+<p><br/>
+Em caso de envio de áudio pelo usuário no Whatsapp, a função detecta se a url publicada está na mensagem e traduz automaticamente o áudio para texto. <br/>
+Requisitos para funcionalidade: <br/>
+&emsp;&emsp; * ffmpeg instalado <br/>
+&emsp;&emsp; * Arquivo google_stt.py no diretorio: '/home/extend/scripts/google_stt.py' <br/>
+&emsp;&emsp; * Chave da Google TTS com nome de "key.json" no diretorio: '/root/google-cloud-sdk/key.json' <br/>
+<br/></p>
+<p><b>Funcao:</b> <br />
+  botGetFull($timeout=60,$repeticao_max=3,$repeticao_msg_rep="",$repeticao_msg_fim="")</p>
+<p><b>Parametros:</b> <br/>
+   <code>$timeout</code> - Int -&gt; <br/>
+   &emsp;&emsp; Tempo total de espera em segundos. <br/>
+   <code>$repeticao_max</code> - Int -&gt; <br/>
+   &emsp;&emsp; Quantidade de repetições. <br/>
+   <code>$repeticao_msg_rep</code> - String/Array -&gt; <br/>
+   &emsp;&emsp; Mensagem que será enviada após cada repetição. <br/>
+   &emsp;&emsp; Em caso de Array, a cada repetição será enviado cada índice do Array <br/>
+   <code>$repeticao_msg_fim</code> - String -&gt; <br/>
+   &emsp;&emsp; Mensagem que será envida na última iteração. <br/></p>
+<p><b>Retorno:</b> <br/>
+  String com texto digitado pelo usuário.</p>
+<pre><code>Exemplo 1:
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        $menu = array("Escolha uma das opções",
+                      "Financeiro",
+                      "Comercial");
+
+        botInsertButtom($menu);
+
+        //variavel $text recebe texto digitado pelo usuário
+        $text = botGetFull();
+
+
+        botFinishChat();
+
+    ?&gt;
+
+---------------------------------------------------------------
+Exemplo 2:
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        $menu = array("Escolha uma das opções",
+                      "Financeiro",
+                      "Comercial");
+
+        botInsertButtom($menu);
+
+        $msg_timeout = "Oi, me fale o que está acontecendo. Tente digitar novamente, por favor 😊";
+        $msg_timeout_fim = "Realmente não entendi 😔. Lamento, vou encerrar sua ligação.";
+
+        //variavel $text recebe texto digitado pelo usuário
+        $text = botGetFull(120, 4, $msg_timeout, $msg_timeout_fim);
+
+        botFinishChat();
+
+    ?&gt;
+
+
+---------------------------------------------------------------
+Exemplo 3:
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        $menu = array("Escolha uma das opções",
+                      "Financeiro",
+                      "Comercial");
+
+        botInsertButtom($menu);
+
+        $msg_timeout = array("Oi, me fale o que está acontecendo. Tente digitar novamente, por favor 😊",
+                             "Você ainda está por ai?",
+                             "Olá, podemos tentar novamente?")
+
+        $msg_timeout_fim = "Realmente não entendi 😔. Lamento, vou encerrar sua ligação.";
+
+        //variavel $text recebe texto digitado pelo usuário
+        $text = botGetFull(120, 4, $msg_timeout, $msg_timeout_fim);
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botfaq">botFaq</h2>
+<p>Utiliza a aplicação da Sophia, e retorna o valor do dicionário. <br/>
+A função registra automaticamente os dados no banco quando as variaveis '$bot_ura', '$bot_menu', '$bot_opcao' estiverem preenchidas no fluxo.</p>
+<p>IMPORTANTE: Necessário ter a aplicação da Sophia para o funcionamento. <br/>
+Diretório padrão: /home/extend/sophia/</p>
+<p><b>Funcao:</b> <br />
+  botFaq($dic_sophia, $duvida, $assunto="")</p>
+<p><b>Parametros:</b> <br/>
+* <code>$dic_sophia</code> - String -&gt; <br/>
+&emsp;&emsp; Caminho completo do diciónario <br/>
+* <code>$duvida</code> - String -&gt; <br/>
+&emsp;&emsp; Texto com a mensagem que será enviada para o dicionário. <br/>
+* <code>$assunto</code> - String -&gt; <br/>
+&emsp;&emsp; Assunto relacionado. Registra automaticamente nos relatórios quando configurado. <br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        $sophia_dic = "/home/extend/sophia/sophia.ai";
+
+        botStartChat();
+        botInsertMsg("Saudações. Bem vindo ao nosso Bot");
+
+        $menu = array("Escolha uma das opções",
+                      "Financeiro",
+                      "Comercial");
+
+        botInsertButtom($menu);
+
+        $text = botGetFull();
+        $faq_results = botFaq($sophia_dic, $text);
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+              
+            </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../chatbot_updade/" class="btn btn-neutral float-right" title="Updates">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../chatbot_start/" class="btn btn-neutral" title="Start"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../chatbot_start/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../chatbot_updade/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme_extra.js" defer></script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
