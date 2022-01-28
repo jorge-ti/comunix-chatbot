@@ -114,11 +114,12 @@
               
                 <h1 id="updateinfo">Update/Info</h1>
 <h2 id="botupdatemsgbot">botUpdateMsgBot</h2>
-<p>Atualiza o campo do relatório: URA - MENU - OPCAO - CTI</p>
+<p>Atualiza o campo do relatório: CHAT_NOME - MENU - OPCAO - CTI <br/>
+Em caso do uso da função botFaq() os dados referentes à Sophia serão registrados automaticamente. Para isso, basta as variavéis $bot_nome, $bot_menu e $bot_opcao estarem preenchidas. <br/></p>
 <p><b>Funcao:</b> <br/>
-  botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti)</p>
+  botUpdateMsgBot($bot_nome,$bot_menu,$bot_opcao,$cti)</p>
 <p><b>Parametros:</b> <br/>
-  * <code>$bot_ura</code> - String <br/>
+  * <code>$bot_nome</code> - String <br/>
   * <code>$bot_menu</code> - String <br/>
   * <code>$bot_opcao</code> - String -&gt;<br/>
   &emsp;&emsp; Pode ser informado "i" para opção invalida<br/>
@@ -138,7 +139,7 @@
         $telefone=$argv[2];
         $assunto=$argv[3];
 
-        $bot_ura = "Chatbot Comunix";
+        $bot_nome = "Chatbot Comunix";
         $cti = 0_0_0;
 
         botStartChat();

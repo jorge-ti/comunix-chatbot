@@ -522,8 +522,7 @@ Exemplo 3:
 <!-- ----------------------------------------------------- -->
 
 <h2 id="botfaq">botFaq</h2>
-<p>Utiliza a aplicação da Sophia, e retorna o valor do dicionário. <br/>
-A função registra automaticamente os dados no banco quando as variaveis '$bot_ura', '$bot_menu', '$bot_opcao' estiverem preenchidas no fluxo.</p>
+<p>Utiliza a aplicação da Sophia, e retorna o valor do dicionário. <br/></p>
 <p>IMPORTANTE: Necessário ter a aplicação da Sophia para o funcionamento. <br/>
 Diretório padrão: /home/extend/sophia/</p>
 <p><b>Funcao:</b> <br />
@@ -535,6 +534,9 @@ Diretório padrão: /home/extend/sophia/</p>
 &emsp;&emsp; Texto com a mensagem que será enviada para o dicionário. <br/>
 * <code>$assunto</code> - String -&gt; <br/>
 &emsp;&emsp; Assunto relacionado. Registra automaticamente nos relatórios quando configurado. <br/></p>
+<p><b>Retorno:</b> <br/>
+  String com texto retornado pela melhor ocorrência do dicionário. <br/>
+  Em caso de não encontrar ocorrência, será retornado "botFac_0".</p>
 <pre><code>Exemplo: 
     &lt;?php
         header('Content-Type: text/html; charset=utf-8');
