@@ -404,12 +404,13 @@ Requisitos para funcionalidade: <br/>
 &emsp;&emsp; * Chave da Google TTS com nome de "key.json" no diretorio: '/root/google-cloud-sdk/key.json' <br/>
 <br/></p>
 <p><b>Funcao:</b> <br />
-  botGetFull($timeout=60,$repeticao_max=3,$repeticao_msg_rep="",$repeticao_msg_fim="")</p>
+  botGetFull($repeticao_max=3, $timeout=60, $repeticao_msg_rep="", $repeticao_msg_fim="")</p>
 <p><b>Parametros:</b> <br/>
    <code>$timeout</code> - Int -&gt; <br/>
    &emsp;&emsp; Tempo total de espera em segundos. <br/>
-   <code>$repeticao_max</code> - Int -&gt; <br/>
+   <code>$repeticao_max</code> - Int/Array -&gt; <br/>
    &emsp;&emsp; Quantidade de repetições. <br/>
+   &emsp;&emsp; Em caso de Array, a cada repetição será enviado cada índice do Array <br/>
    <code>$repeticao_msg_rep</code> - String/Array -&gt; <br/>
    &emsp;&emsp; Mensagem que será enviada após cada repetição. <br/>
    &emsp;&emsp; Em caso de Array, a cada repetição será enviado cada índice do Array <br/>
