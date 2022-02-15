@@ -60,6 +60,8 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#botupdatemsgbot">botUpdateMsgBot</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botupdateintegracao">botUpdateIntegracao</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#botupdatecti">botUpdateCTI</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#botupdateagent">botUpdateAgent</a>
@@ -180,6 +182,96 @@ Em caso do uso da função botFaq() os dados referentes à Sophia serão registr
 
         botFinishChat();
 
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botupdateintegracao">botUpdateIntegracao</h2>
+<p>Atualiza o campo de integração</p>
+<p><b>Funcao:</b> <br/>
+  botUpdateIntegracao($integracao_metodo, $integracao_envio, $integracao_retorno, $integracao_extra_1, $integracao_extra_2, $integracao_extra_3)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$integracao_metodo</code> - String <br/>
+  &emsp;&emsp; Metedo utilizado <br/>
+  * <code>$integracao_envio</code> - String <br/>
+  &emsp;&emsp; Dados enviados ao servidor <br/>
+  * <code>$integracao_retorno</code> - String <br/>
+  &emsp;&emsp; Dados recebidos do servidor <br/>
+   <code>$integracao_extra_1</code> - String <br/>
+  &emsp;&emsp; Informcação adicional, caso precise <br/>
+   <code>$integracao_extra_2</code> - String <br/>
+  &emsp;&emsp; Informcação adicional, caso precise <br/>
+   <code>$integracao_extra_3</code> - String <br/>
+  &emsp;&emsp; Informcação adicional, caso precise <br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        function buscaCEP($cep){
+                global $retorno_api;
+
+                $cep = preg_replace('/[^0-9]/', '', $cep);
+                $url = "http://viacep.com.br/ws/$cep/json/";
+
+                $opts = array('http' =&gt;
+                    array(
+                        'method' =&gt; 'GET',
+                        'max_redirects' =&gt; '0',
+                        'ignore_errors' =&gt; '1'
+                    )
+                );
+
+                $context = stream_context_create($opts);
+                $stream = fopen($url, 'r', false, $context);
+                $retorno_api = json_decode(stream_get_contents($stream));
+                $retorno_header = stream_get_meta_data($stream);
+                fclose($stream);
+
+                $status = $retorno_header['wrapper_data'][0];
+
+                if($status== "HTTP/1.1 200 OK"){
+                                $localidade = $retorno_api-&gt;{'localidade'};
+                                $bairro = $retorno_api-&gt;{'bairro'};
+                                $logradouro = $retorno_api-&gt;{'logradouro'};
+                        if($localidade != "" &amp;&amp; $bairro != "" &amp;&amp; $logradouro != ""){ 
+                                $retorno = "$localidade, $bairro, $logradouro?";
+                        }else{
+                                $retorno = 0;
+                        }
+                }else{
+                        $retorno = "falha";
+                }
+
+
+                return $retorno;
+
+        }
+
+
+        botStartChat();
+
+        botInsertMsg("Por favor, digite o ceu CEP");
+
+        $text = botGetFull();
+        $cep = $text;
+
+        $endereco = buscaCEP($cep);
+        botUpdateIntegracao("Consulta Cep", $cep, $retorno_api)
+
+        botInsertMsg("O seu endereço é: $endereco");
+
+        botFinishChat();
 
     ?&gt;
 </code></pre>
