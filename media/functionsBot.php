@@ -1,10 +1,9 @@
 <?php
-//Version: 1.0
+//version: 1.3
 header('Content-Type: text/html; charset=utf-8');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
 include_once dirname(__FILE__).'/db.php';
-
 
 //--------------------------------
 function botGeraLog($filename,$msg){
@@ -193,24 +192,21 @@ function getChannel(){
     
 }
 
+
 //--------------------------------
-function botFaq($duvida, $dic_sophiai, $assunto=""){
+function botFaq($dic_sophia, $duvida, $assunto=""){
     //Utiliza sophia para retorno sobre um dicionario
     //@param string  $duvida -> Texto que sera enviado para o dicionario da Sophia
     //@param string  $dic_sophia -> Caminho completo do dicionario (Arquivo ".ai") 
+    //@param string  $assunto -> Caso tenha relacionamento com assuntos
     
+    global $ret_botfaq_dic;
+    global $ret_botfaq_duvida;
+    global $ret_botfaq_assunto;
+    global $ret_botfaq_palavra;
     global $ret_botfaq_score;
     global $ret_botfaq_retorno;
-    global $ret_botfaq_palavra;
-    global $ret_botfaq_duvida;
-    global $ret_botfaq_dic;
-    global $ret_botfaq_assunto;
     
-    global $bot_ura;
-    global $bot_menu;
-    global $bot_opcao;
-    global $cti;
-
     $name_function = __FUNCTION__;
 
     $sophia_bin = "/home/extend/sophia/./sophia";
@@ -225,22 +221,43 @@ function botFaq($duvida, $dic_sophiai, $assunto=""){
     if($score < 100){
         $retSophia = 0;
     }
+ 
+    $list_score = [];
+    foreach ($arrResp as &$valor) {
+        $arr_1 = explode(":",$valor);
+        $score_temp = $arr_1[2];
+        $number  = explode(",",$score_temp)[0];
+        if( intval($number) ){
+            $list_score[$number] = $arr_1[1];
+        }
+    }
+
+    $chave_maior = max( array_keys($list_score));
+    $chave_result = $list_score[$chave_maior];
+    $palavra = explode(",",$chave_result)[0];
+
+
     $ret_b = explode(",",$arrResp[2]);
-    $ret_botfaq_score = $score;
-    $ret_botfaq_retorno = $retSophia;
-    $ret_botfaq_palavra = "$ret_b[0]@$ret_b[2]";
-    $ret_botfaq_duvida = $duvida;
-    $ret_botfaq_dic = $dic_sophia;
-    $ret_botfaq_assunto = $assunto;
+    $ret_botfaq_dic = trim($dic_sophia);
+    $ret_botfaq_duvida = trim($duvida);
+    $ret_botfaq_assunto = trim($assunto);
+    $ret_botfaq_score = trim($score);
+    $ret_botfaq_palavra = trim($palavra);
+    $ret_botfaq_retorno = trim($retSophia);
+
 
     $log = "LOG $name_function: DIC:$dic_sophia -- DUVIDA:$duvida -- RETORNO:$retSophia";
     $cmd = "LOG $name_function: CMD: $sophia_bin $dic_sophia '$duvida'";
     echo "$log \n";
     echo "$cmd \n";
 
-    if ($bot_ura != "" && $bot_menu != "" && $bot_opcao != ""){
-        botUpdateMsgSophia($bot_ura, $bot_menu, $bot_opcao, $cti, $ret_botfaq_duvida, $ret_botfaq_assunto, $ret_botfaq_dic, $ret_botfaq_palavra, $ret_botfaq_duvida, $ret_botfaq_score);
+
+    if("$retSophia" == "0"){
+        $retSophia = "botFac_0";
+        $ret_botfaq_retorno = "botFac_0";
     }
+    
+    botUpdateMsgSophia();
 
     return $retSophia;
 
@@ -505,9 +522,9 @@ function botInsertButtom($btn,$wpp_prefix=1){
 
 
 //--------------------------------
-function botGetFull($timeout=60,$repeticao_max=3,$repeticao_msg_rep="",$repeticao_msg_fim=""){
+function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $repeticao_msg_fim=""){
     //Caputura mensagem do usuario
-    //@param integer $timeout -> Tempo total de espera
+    //@param integer ou array $timeout -> Tempo total de espera
     //@param integer $repeticao_max -> Numero maximo de repeticoes da mensagem de timeout
     //@param string ou array  $repeticao_msg_rep -> Mensagem a cada repeticao
     //@param string  $repeticao_msg_fim -> Mensagem ao final das repeticoes. Quando chegar ao numero do parametro $repeticao_max
@@ -543,6 +560,13 @@ function botGetFull($timeout=60,$repeticao_max=3,$repeticao_msg_rep="",$repetica
 
 
     start_get_full:
+    
+    if (is_array($timeout_rep)){
+        $timeout = $timeout_rep[$repeticao -1];
+    }else{
+        $timeout = $timeout_rep;
+    }
+
     $start = time();
     $text = "";
     $sql = "update messages set sent=1 where type=0 and id_chat=$id";
@@ -768,7 +792,12 @@ function botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti){
     global $id;
     global $db;
     global $id_msg;
+
     $name_function = __FUNCTION__;
+    
+    if($bot_opcao == "i"){
+        $bot_opcao = "Opção Inválida";
+    }
 
     $sql = "UPDATE messages SET ds_bot_ura = '$bot_ura', ds_bot_menu = '$bot_menu', ds_bot_opcao = '$bot_opcao', ds_bot_cti = '$cti' WHERE messages.id = $id_msg";
     $db->exec($sql);
@@ -776,7 +805,7 @@ function botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti){
     $log = "CMD:$sql";
     botGeraLog($name_function,$log);
     echo "LOG $name_function: $sql \n";
-    
+
     sleep(1);
     return;
 
@@ -784,27 +813,24 @@ function botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti){
 
 
 //--------------------------------
-function botUpdateMsgSophia($bot_ura,$bot_menu,$bot_opcao,$cti,$texto,$sophia_assunto,$sophia_dic,$sophia_palavra,$sophia_transcricao,$sophia_score){
+function botUpdateMsgSophia(){
     //Insere bilhete de navegacao, incluindo dados da Sophia
     //Natural language process
-    //@param string  $bot_ura -> Nome da "URA"
-    //@param string  $bot_menu -> Nome da "MENU"
-    //@param string  $bot_opcao -> Nome da "OPCAO"
-    //@param string  $cti -> Formato INFORMACAO_PROTOCOLO_CPF
-    //@param string  $texto -> Texto enviado para a Sophia
-    //@param string  $sophia_assunto -> Assunto(OPCAO) no contexto da Sophia  
-    //@param string  $sophia_dic -> Dicionario usado pela Sophia              // Retorna variavel global $ret_botfaq_dic ao usar a funcao botFaq()
-    //@param string  $sophia_palavra -> Retorno da Sophia                     // Retorna variavel global $ret_botfaq_retorno ao usar a funcao botFaq()
-    //@param string  $sophia_transcricao -> Texto envidado para Sophia        // Retorna variavel global $ret_botfaq_duvida ao usar a funcao botFaq()
-    //@param string  $sophia_score -> Score retornado da Sophia               // Retorna variavel global $ret_botfaq_score ao usar a funcao botFaq() 
-
 
     global $id;
     global $db;
     global $id_msg;
+    
+    global $ret_botfaq_dic;
+    global $ret_botfaq_duvida;
+    global $ret_botfaq_assunto;
+    global $ret_botfaq_palavra;
+    global $ret_botfaq_score;
+    global $ret_botfaq_retorno;
+
     $name_function = __FUNCTION__;
 
-    $sql = "UPDATE messages SET ds_bot_ura = '$bot_ura', ds_bot_menu = '$bot_menu', ds_bot_opcao = '$bot_opcao', ds_bot_cti = '$cti', js_nlp='{\"ds_dicionario\":\"$sophia_dic\", \"ds_assunto\":\"$sophia_assunto\", \"ds_palavra\":\"$sophia_palavra\", \"ds_transcricao\":\"$sophia_transcricao\", \"nu_score\":\"$sophia_score\"}' WHERE messages.id = $id_msg";
+    $sql = "UPDATE messages SET js_nlp='{ \"ds_dicionario\":\"$ret_botfaq_dic\", \"ds_duvida\":\"$ret_botfaq_duvida\", \"ds_assunto\":\"$ret_botfaq_assunto\", \"ds_palavra\":\"$ret_botfaq_palavra\", \"nu_score\":\"$ret_botfaq_score\", \"ds_transcricao\":\"$ret_botfaq_retorno\" }' WHERE messages.id = $id_msg";
     $db->exec($sql);
 
     $log = "CMD:$sql";
@@ -816,6 +842,28 @@ function botUpdateMsgSophia($bot_ura,$bot_menu,$bot_opcao,$cti,$texto,$sophia_as
 
 }
 
+
+//--------------------------------
+function botUpdateIntegracao($integracao_metodo, $integracao_envio, $integracao_retorno, $integracao_extra_1, $integracao_extra_2, $integracao_extra_3){
+    //Insere bilhete de integracao
+
+    global $id;
+    global $db;
+    global $id_msg;
+    
+    $name_function = __FUNCTION__;
+
+    $sql = "UPDATE messages SET js_integracao='{ \"ds_metodo\":\"$integracao_metodo\", \"ds_envio\":\"$integracao_envio\", \"ds_retorno\":\"$integracao_retorno\", \"ds_extra_1\":\"$integracao_extra_1\", \"ds_extra_2\":\"$integracao_extra_2\", \"ds_extra_3\":\"$integracao_extra_3\" }' WHERE messages.id = $id_msg";
+    $db->exec($sql);
+
+    $log = "CMD:$sql";
+    botGeraLog($name_function,$log);
+    echo "LOG $name_function: $sql \n";
+
+    sleep(1);
+    return;
+
+}
 
 //--------------------------------
 function botUpdateCTI($cti_new){
