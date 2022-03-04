@@ -70,6 +70,8 @@
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#onlynumber">onlyNumber</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botlog">botLog</a>
+    </li>
     </ul>
                     </li>
                     <li class="toctree-l1"><a class="reference internal" href="../chatbot_exemples/">Exemplos</a>
@@ -129,6 +131,10 @@
         include dirname(__FILE__).'/functionsBot.php';
         error_reporting(1);
 
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
         $x = 'Palavra com Acentuação';
         $y = removeAcento($x);
         print($y);
@@ -155,6 +161,10 @@
         header("Access-Control-Allow-Headers: Content-Type");
         include dirname(__FILE__).'/functionsBot.php';
         error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
 
         $x = 'Palavra com Acentuação';
         $y = unidecode($x);
@@ -183,6 +193,10 @@ output:
         include dirname(__FILE__).'/functionsBot.php';
         error_reporting(1);
 
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
         $x = 'Meu CPF é 999.999.999-00';
         $y = onlyNumber($x);
         print($y);
@@ -190,6 +204,46 @@ output:
 
 output:
     99999999900
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+<h2 id="botlog">botLog</h2>
+<p>Gera log conforme dados informados. <br>
+Dentro do diretorio escolhido será criado um diretorio conforme a data atual. Dentro do arquivo será adicionado a data no começo de cada registro no arquivo. E para cada registro já será salvo o ID do chat atual.</p>
+<p><b>Funcao</b>: <br />
+  botLog($log_dir, $filename, $msg)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>log_dir</code> - String 
+  &emsp;&emsp; Diretorio onde será salvo os log<br/>
+  * <code>filename</code> - String 
+  &emsp;&emsp; Nome do arquivo de log<br/>
+  * <code>msg</code> - String 
+  &emsp;&emsp; Texto que que será salvo<br/></p>
+<p><b>Retorno:</b> <br/>
+  String com texto formatado.</p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        $x = 'Meu CPF é 999.999.999-00';
+        $y = onlyNumber($x);
+        $log_msg = "CPF digitado: $x"
+        botLog("/home/extend/log_chat/", "log_chat_suporte.log", )
+        print($y);
+    ?&gt;
+
+No aquivo ficara:
+    cat /home/extend/log_chat/2022-03-03/log_chat_suporte.log
+    LOG=2022-02-25-09:18:13;ID_CHAT:1270;CPF digitado: 99999999900
 </code></pre>
               
             </div>

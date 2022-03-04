@@ -41,6 +41,40 @@ function botGeraLog($filename,$msg){
 
 }
 
+//--------------------------------
+function botLog($log_dir, $filename, $msg){
+    //Gera log 
+    
+    global $id;
+    $name_function = __FUNCTION__;
+
+    $dia = date('Y-m-d');
+    $hora = date('H:i:s');
+    
+    $file_log = "$log_dir/$dia/$filename";
+    $log_content = "LOG=$dia-$hora;ID_CHAT:$id;$msg\n";
+    
+    shell_exec("mkdir -p $log_dir/$dia");
+
+    if(is_dir("$log_dir/$dia")){
+
+        $arquivo = fopen($file_log,"a+");
+
+        if (flock($arquivo, LOCK_EX)) {
+            fwrite($arquivo, $log_content);
+            flock($arquivo, LOCK_UN);
+
+        }else{
+            echo "LOG $name_function: Arquivo nao foi travado! \n";
+        }
+
+        fclose($arquivo);
+
+    }else{
+        echo "LOG $name_function: Falha ao criar o diretório de log! \n";
+    }
+
+}
 
 //--------------------------------
 function botGeraProtocolo(){
@@ -352,6 +386,7 @@ function botInsertMsg($msg){
 
     global $id;
     global $db;
+    global $id_msg_bot;
     $name_function = __FUNCTION__;
 
     $arquivo_insert_msg = getInsertFile();
@@ -372,9 +407,10 @@ function botInsertMsg($msg){
     }
 
     $msg = str_replace("\n", " ",$msg);
-    $cmd = "$arquivo_insert_msg '$id' '$msg'";
+    $cmd = "$arquivo_insert_msg '$id' '$msg' | grep RETORNO_ID_MSG | cut -d':' -f2";
 
-    system($cmd);
+    $id_msg_bot = exec($cmd);
+    $id_msg_bot = trim($id_msg_bot);
     sleep(1);
     
     echo "LOG $name_function: $cmd \n";
@@ -844,26 +880,83 @@ function botUpdateMsgSophia(){
 
 
 //--------------------------------
-function botUpdateIntegracao($integracao_metodo, $integracao_envio, $integracao_retorno, $integracao_extra_1, $integracao_extra_2, $integracao_extra_3){
-    //Insere bilhete de integracao
-
+function botUpdateMessages($js){
+    //Atualiza tabela messages de acordo com o id da mensagem enviada pelo bot
+    //@param string  $js -> JSON em string
     global $id;
     global $db;
-    global $id_msg;
-    
+    global $id_msg_bot;
     $name_function = __FUNCTION__;
 
-    $sql = "UPDATE messages SET js_integracao='{ \"ds_metodo\":\"$integracao_metodo\", \"ds_envio\":\"$integracao_envio\", \"ds_retorno\":\"$integracao_retorno\", \"ds_extra_1\":\"$integracao_extra_1\", \"ds_extra_2\":\"$integracao_extra_2\", \"ds_extra_3\":\"$integracao_extra_3\" }' WHERE messages.id = $id_msg";
+    $sql="UPDATE messages SET js_integracao = COALESCE(js_integracao,'{}') || '$js'::JSONB WHERE id = $id_msg_bot;";
     $db->exec($sql);
 
-    $log = "CMD:$sql";
-    botGeraLog($name_function,$log);
+    $log = "SQL:$sql";
     echo "LOG $name_function: $sql \n";
+    botGeraLog($name_function,$log);
 
-    sleep(1);
+    sleep(0.5);
     return;
 
 }
+
+
+//--------------------------------
+function botUpdateChatlist($js){
+    //Atualiza chatlist
+    //@param string  $js -> JSON em string
+    global $id;
+    global $db;
+    $name_function = __FUNCTION__;
+
+    $sql="UPDATE chat_list SET js_integracao = COALESCE(js_integracao,'{}') || '$js'::JSONB WHERE id = $id;";
+    $db->exec($sql);
+
+    $log = "SQL:$sql";
+    echo "LOG $name_function: $sql \n";
+    botGeraLog($name_function,$log);
+
+    sleep(0.5);
+    return;
+
+
+}
+
+
+//--------------------------------
+function botUpdateIntegracaoDB($js){
+    //Atualiza chatlist
+    //@param string  $js -> JSON em string
+    global $id;
+    global $db;
+    $name_function = __FUNCTION__;
+
+    $sql="INSERT INTO integracao.tb_chat_integracao(id_chat, js_integracao) VALUES ($id, '$js') RETURNING cd_chat_integracao;"
+    $db->exec($sql);
+
+    $log = "SQL:$sql";
+    echo "LOG $name_function: $sql \n";
+    botGeraLog($name_function,$log);
+
+    sleep(0.5);
+    return;
+
+
+}
+
+
+//--------------------------------
+function botUpdateIntegracaoHTTP($integracao_url="", $integracao_metodo="", $integracao_envio="", $integracao_retorno="", $integracao_extra_1="", $integracao_extra_2="", $integracao_extra_3=""){
+    //Insere bilhete de integracao
+
+    $js = "{ \"int_url\":\"$integracao_url\",  \"int_metodo\":\"$integracao_metodo\", \"int_envio\":\"$integracao_envio\", \"int_retorno\":\"$integracao_retorno\", \"int_extra_1\":\"$integracao_extra_1\", \"int_extra_2\":\"$integracao_extra_2\", \"int_extra_3\":\"$integracao_extra_3\" }";
+
+    botUpdateIntegracaoDB($js);
+
+    return;
+
+}
+
 
 //--------------------------------
 function botUpdateCTI($cti_new){

@@ -60,11 +60,17 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#botupdatemsgbot">botUpdateMsgBot</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#botupdateintegracao">botUpdateIntegracao</a>
-    </li>
     <li class="toctree-l2"><a class="reference internal" href="#botupdatecti">botUpdateCTI</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#botupdateagent">botUpdateAgent</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botupdatechatlist">botUpdateChatlist</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botupdatemessages">botUpdateMessages</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botupdateintegracao">botUpdateIntegracao</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#botupdateintegracaohttp">botUpdateIntegracaoHTTP</a>
     </li>
     </ul>
                     </li>
@@ -189,96 +195,6 @@ Em caso do uso da função botFaq() os dados referentes à Sophia serão registr
 <p><br /></p>
 <!-- ----------------------------------------------------- -->
 
-<h2 id="botupdateintegracao">botUpdateIntegracao</h2>
-<p>Atualiza o campo de integração</p>
-<p><b>Funcao:</b> <br/>
-  botUpdateIntegracao($integracao_metodo, $integracao_envio, $integracao_retorno, $integracao_extra_1, $integracao_extra_2, $integracao_extra_3)</p>
-<p><b>Parametros:</b> <br/>
-  * <code>$integracao_metodo</code> - String <br/>
-  &emsp;&emsp; Metedo utilizado <br/>
-  * <code>$integracao_envio</code> - String <br/>
-  &emsp;&emsp; Dados enviados ao servidor <br/>
-  * <code>$integracao_retorno</code> - String <br/>
-  &emsp;&emsp; Dados recebidos do servidor <br/>
-   <code>$integracao_extra_1</code> - String <br/>
-  &emsp;&emsp; Informcação adicional, caso precise <br/>
-   <code>$integracao_extra_2</code> - String <br/>
-  &emsp;&emsp; Informcação adicional, caso precise <br/>
-   <code>$integracao_extra_3</code> - String <br/>
-  &emsp;&emsp; Informcação adicional, caso precise <br/></p>
-<pre><code>Exemplo: 
-    &lt;?php
-        header('Content-Type: text/html; charset=utf-8');
-        header("Access-Control-Allow-Origin: *");
-        header("Access-Control-Allow-Headers: Content-Type");
-        include dirname(__FILE__).'/functionsBot.php';
-        error_reporting(1);
-
-        $id=$argv[1];
-        $telefone=$argv[2];
-        $assunto=$argv[3];
-
-        function buscaCEP($cep){
-                global $retorno_api;
-
-                $cep = preg_replace('/[^0-9]/', '', $cep);
-                $url = "http://viacep.com.br/ws/$cep/json/";
-
-                $opts = array('http' =&gt;
-                    array(
-                        'method' =&gt; 'GET',
-                        'max_redirects' =&gt; '0',
-                        'ignore_errors' =&gt; '1'
-                    )
-                );
-
-                $context = stream_context_create($opts);
-                $stream = fopen($url, 'r', false, $context);
-                $retorno_api = json_decode(stream_get_contents($stream));
-                $retorno_header = stream_get_meta_data($stream);
-                fclose($stream);
-
-                $status = $retorno_header['wrapper_data'][0];
-
-                if($status== "HTTP/1.1 200 OK"){
-                                $localidade = $retorno_api-&gt;{'localidade'};
-                                $bairro = $retorno_api-&gt;{'bairro'};
-                                $logradouro = $retorno_api-&gt;{'logradouro'};
-                        if($localidade != "" &amp;&amp; $bairro != "" &amp;&amp; $logradouro != ""){ 
-                                $retorno = "$localidade, $bairro, $logradouro?";
-                        }else{
-                                $retorno = 0;
-                        }
-                }else{
-                        $retorno = "falha";
-                }
-
-
-                return $retorno;
-
-        }
-
-
-        botStartChat();
-
-        botInsertMsg("Por favor, digite o ceu CEP");
-
-        $text = botGetFull();
-        $cep = $text;
-
-        $endereco = buscaCEP($cep);
-        botUpdateIntegracao("Consulta Cep", $cep, $retorno_api)
-
-        botInsertMsg("O seu endereço é: $endereco");
-
-        botFinishChat();
-
-    ?&gt;
-</code></pre>
-<hr />
-<p><br /></p>
-<!-- ----------------------------------------------------- -->
-
 <h2 id="botupdatecti">botUpdateCTI</h2>
 <p>Atualiza o campo do CTI</p>
 <p><b>Funcao:</b> <br/>
@@ -333,6 +249,250 @@ Em caso do uso da função botFaq() os dados referentes à Sophia serão registr
         botStartChat();
 
         botUpdateAgent(500500);
+        botTransfer();
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botupdatechatlist">botUpdateChatlist</h2>
+<p>Atualiza a tabela Chatlist. <br>
+Sera enviado um JSON com as informações desejadas. <br>
+OBS: Para esse recurso é necessário que o 'insert_messages_exec.php' estaja atualizado no minímo na versão 1.0</p>
+<p><b>Funcao:</b> <br/>
+  botUpdateChatlist($js)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$js</code> - String
+  &emsp;&emsp; O JSON deve ser encaminhado no formato String<br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        botStartChat();
+
+        $telefone = botGetTelefone();
+        $telefone_status = capturaStatusTelCliente();
+
+        $js = "{\"telefone\":\"$telefone\", \"status\":\"$telefone_status\"}";
+        botUpdateChatlist($js);
+
+        botTransfer();
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botupdatemessages">botUpdateMessages</h2>
+<p>Atualiza a tabela Messages. <br>
+Sera enviado um JSON com as informações desejadas e será associado ao ID da mensagem enviada pelo Bot. <br>
+OBS: Para esse recurso é necessário que o 'insert_messages_exec.php' estaja atualizado no minímo na versão 1.0</p>
+<p><b>Funcao:</b> <br/>
+  botUpdateMessages($js)</p>
+<p><b>Parametros:</b> <br/>
+  * <code>$js</code> - String
+  &emsp;&emsp; O JSON deve ser encaminhado no formato String<br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        botStartChat();
+
+        botInsertMsg("Por favor, digite seu telefone");
+
+        $telefone = botGetFull();
+        $telefone_status = capturaStatusTelCliente();
+
+        $js = "{\"telefone\":\"$telefone\", \"status\":\"$telefone_status\"}";
+        botUpdateMessages($js);
+
+        botTransfer();
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botupdateintegracao">botUpdateIntegracao</h2>
+<p>Adiciona um registro na tabela tb_chat_integracao. <br>
+Utilização ideal para registrar no banco as requições de uma integração em ambito geral. Podendo enviar um JSON conforme a necessidade<br></p>
+<p><b>Funcao:</b> <br/>
+  botUpdateIntegracaoHTTP($js);</p>
+<p><b>Parametros:</b> <br/>
+  <code>$js</code> - String
+  &emsp;&emsp; O JSON deve ser encaminhado no formato String<br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        botStartChat();
+
+
+        function buscaCEP($cep){
+                $cep = preg_replace('/[^0-9]/', '', $cep);
+                $url = "http://viacep.com.br/ws/$cep/json/";
+
+                $opts = array('http' =&gt;
+                    array(
+                        'method' =&gt; 'GET',
+                        'max_redirects' =&gt; '0',
+                        'ignore_errors' =&gt; '1'
+                    )
+                );
+
+                $context = stream_context_create($opts);
+                $stream = fopen($url, 'r', false, $context);
+                $retorno_api = json_decode(stream_get_contents($stream));
+                $retorno_header = stream_get_meta_data($stream);
+                fclose($stream);
+
+                $status = $retorno_header['wrapper_data'][0];
+
+                if($status== "HTTP/1.1 200 OK"){
+                                $localidade = $retorno_api-&gt;{'localidade'};
+                                $bairro = $retorno_api-&gt;{'bairro'};
+                                $logradouro = $retorno_api-&gt;{'logradouro'};
+                        if($localidade != "" &amp;&amp; $bairro != "" &amp;&amp; $logradouro != ""){ 
+                                $retorno = "Seu endereço é: $localidade, $bairro, $logradouro?";
+                        }else{
+                                $retorno = 0;
+                        }
+                }else{
+                        $retorno = "falha";
+                }
+
+                $js = "{ \"url\":\"$url\", \"envio\":\"$cep\", \"retorno\":\"$status\" }";
+                return $retorno;
+
+        }
+
+        botInsertMsg("Por favor, digite seu telefone");
+
+        $cep = botGetFull();
+        $endereco = buscaCEP($cep);
+
+        botTransfer();
+
+        botFinishChat();
+
+    ?&gt;
+</code></pre>
+<hr />
+<p><br /></p>
+<!-- ----------------------------------------------------- -->
+
+<h2 id="botupdateintegracaohttp">botUpdateIntegracaoHTTP</h2>
+<p>Adiciona um registro na tabela tb_chat_integracao. <br>
+Utilização ideal para registrar no banco as requições de uma integração HTTP. <br></p>
+<p><b>Funcao:</b> <br/>
+  botUpdateIntegracaoHTTP($integracao_url, $integracao_metodo, $integracao_envio, $integracao_retorno, $integracao_extra_1, $integracao_extra_2, $integracao_extra_3)</p>
+<p><b>Parametros:</b> <br/>
+  <code>$integracao_url</code> - String
+  &emsp;&emsp; URL utilizada <br/>
+  <code>$integracao_metodo</code> - String
+  &emsp;&emsp; Metodo/Verbo utilizada <br/>
+  <code>$integracao_envio</code> - String
+  &emsp;&emsp; O que foi enviado ao endpoint <br/>
+  <code>$integracao_retorno</code> - String
+  &emsp;&emsp; O que foi retornado do endpoint <br/>
+  <code>$integracao_extra_1</code> - String
+  &emsp;&emsp; Campo extra para inserir alguma informação adicional<br/>
+  <code>$integracao_extra_2</code> - String
+  &emsp;&emsp; Campo extra para inserir alguma informação adicional<br/>
+  <code>$integracao_extra_3</code> - String
+  &emsp;&emsp; Campo extra para inserir alguma informação adicional<br/></p>
+<pre><code>Exemplo: 
+    &lt;?php
+        header('Content-Type: text/html; charset=utf-8');
+        header("Access-Control-Allow-Origin: *");
+        header("Access-Control-Allow-Headers: Content-Type");
+        include dirname(__FILE__).'/functionsBot.php';
+        error_reporting(1);
+
+        $id=$argv[1];
+        $telefone=$argv[2];
+        $assunto=$argv[3];
+
+        botStartChat();
+
+
+        function buscaCEP($cep){
+                $cep = preg_replace('/[^0-9]/', '', $cep);
+                $url = "http://viacep.com.br/ws/$cep/json/";
+
+                $opts = array('http' =&gt;
+                    array(
+                        'method' =&gt; 'GET',
+                        'max_redirects' =&gt; '0',
+                        'ignore_errors' =&gt; '1'
+                    )
+                );
+
+                $context = stream_context_create($opts);
+                $stream = fopen($url, 'r', false, $context);
+                $retorno_api = json_decode(stream_get_contents($stream));
+                $retorno_header = stream_get_meta_data($stream);
+                fclose($stream);
+
+                $status = $retorno_header['wrapper_data'][0];
+
+                if($status== "HTTP/1.1 200 OK"){
+                                $localidade = $retorno_api-&gt;{'localidade'};
+                                $bairro = $retorno_api-&gt;{'bairro'};
+                                $logradouro = $retorno_api-&gt;{'logradouro'};
+                        if($localidade != "" &amp;&amp; $bairro != "" &amp;&amp; $logradouro != ""){ 
+                                $retorno = "Seu endereço é: $localidade, $bairro, $logradouro?";
+                        }else{
+                                $retorno = 0;
+                        }
+                }else{
+                        $retorno = "falha";
+                }
+
+                botUpdateIntegracaoHTTP($url, 'GET', $cep, $status);
+                return $retorno;
+
+        }
+
+        botInsertMsg("Por favor, digite seu telefone");
+
+        $cep = botGetFull();
+        $endereco = buscaCEP($cep);
+
         botTransfer();
 
         botFinishChat();
