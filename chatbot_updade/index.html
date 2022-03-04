@@ -266,7 +266,7 @@ OBS: Para esse recurso é necessário que o 'insert_messages_exec.php' estaja at
 <p><b>Funcao:</b> <br/>
   botUpdateChatlist($js)</p>
 <p><b>Parametros:</b> <br/>
-  * <code>$js</code> - String
+  * <code>$js</code> - String -&gt; <br/>
   &emsp;&emsp; O JSON deve ser encaminhado no formato String<br/></p>
 <pre><code>Exemplo: 
     &lt;?php
@@ -305,7 +305,7 @@ OBS: Para esse recurso é necessário que o 'insert_messages_exec.php' estaja at
 <p><b>Funcao:</b> <br/>
   botUpdateMessages($js)</p>
 <p><b>Parametros:</b> <br/>
-  * <code>$js</code> - String
+  * <code>$js</code> - String -&gt; <br/>
   &emsp;&emsp; O JSON deve ser encaminhado no formato String<br/></p>
 <pre><code>Exemplo: 
     &lt;?php
@@ -345,7 +345,7 @@ Utilização ideal para registrar no banco as requições de uma integração em
 <p><b>Funcao:</b> <br/>
   botUpdateIntegracaoHTTP($js);</p>
 <p><b>Parametros:</b> <br/>
-  <code>$js</code> - String
+  <code>$js</code> - String -&gt; <br/>
   &emsp;&emsp; O JSON deve ser encaminhado no formato String<br/></p>
 <pre><code>Exemplo: 
     &lt;?php
@@ -421,19 +421,19 @@ Utilização ideal para registrar no banco as requições de uma integração HT
 <p><b>Funcao:</b> <br/>
   botUpdateIntegracaoHTTP($integracao_url, $integracao_metodo, $integracao_envio, $integracao_retorno, $integracao_extra_1, $integracao_extra_2, $integracao_extra_3)</p>
 <p><b>Parametros:</b> <br/>
-  <code>$integracao_url</code> - String
+  <code>$integracao_url</code> - String -&gt; <br/>
   &emsp;&emsp; URL utilizada <br/>
-  <code>$integracao_metodo</code> - String
+  <code>$integracao_metodo</code> - String -&gt; <br/>
   &emsp;&emsp; Metodo/Verbo utilizada <br/>
-  <code>$integracao_envio</code> - String
+  <code>$integracao_envio</code> - String -&gt; <br/>
   &emsp;&emsp; O que foi enviado ao endpoint <br/>
-  <code>$integracao_retorno</code> - String
+  <code>$integracao_retorno</code> - String -&gt; <br/>
   &emsp;&emsp; O que foi retornado do endpoint <br/>
-  <code>$integracao_extra_1</code> - String
+  <code>$integracao_extra_1</code> - String -&gt; <br/>
   &emsp;&emsp; Campo extra para inserir alguma informação adicional<br/>
-  <code>$integracao_extra_2</code> - String
+  <code>$integracao_extra_2</code> - String -&gt; <br/>
   &emsp;&emsp; Campo extra para inserir alguma informação adicional<br/>
-  <code>$integracao_extra_3</code> - String
+  <code>$integracao_extra_3</code> - String -&gt; <br/>
   &emsp;&emsp; Campo extra para inserir alguma informação adicional<br/></p>
 <pre><code>Exemplo: 
     &lt;?php
