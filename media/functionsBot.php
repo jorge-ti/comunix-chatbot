@@ -931,7 +931,7 @@ function botUpdateIntegracaoDB($js){
     global $db;
     $name_function = __FUNCTION__;
 
-    $sql="INSERT INTO integracao.tb_chat_integracao(id_chat, js_integracao) VALUES ($id, '$js') RETURNING cd_chat_integracao;"
+    $sql="INSERT INTO integracao.tb_chat_integracao(id_chat, js_integracao) VALUES ($id, '$js') RETURNING cd_chat_integracao;";
     $db->exec($sql);
 
     $log = "SQL:$sql";
