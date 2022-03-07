@@ -305,7 +305,13 @@ function botStartChat(){
 
     global $id;
     global $db;
+    global $protocolo_bot;
+    global $protocolo_js;
     $name_function = __FUNCTION__;
+
+    $ano = date("Ymd");
+    $protocolo_bot = $ano.$id;
+    $protocolo_js = "{ \"protocolo\": \"$protocolo_bot\"}";
 
     botVerificaHorarioChat();
 
@@ -931,7 +937,7 @@ function botUpdateIntegracaoDB($js){
     global $db;
     $name_function = __FUNCTION__;
 
-    $sql="INSERT INTO integracao.tb_chat_integracao(id_chat, js_integracao) VALUES ($id, '$js') RETURNING cd_chat_integracao;"
+    $sql="INSERT INTO integracao.tb_chat_integracao(id_chat, js_integracao) VALUES ($id, '$js') RETURNING cd_chat_integracao;";
     $db->exec($sql);
 
     $log = "SQL:$sql";
