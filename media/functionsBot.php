@@ -1,5 +1,5 @@
 <?php
-//version: 1.3
+//version: 1.4
 header('Content-Type: text/html; charset=utf-8');
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Headers: Content-Type");
@@ -197,30 +197,16 @@ function getURLChat(){
 
 //--------------------------------
 function getChannel(){
+    global $id;
     $channel = "";
-    foreach (debug_backtrace() as &$valor) {
-        $back_file = $valor['file'];
 
-        if (strpos($back_file,"bot_thread_chat") !== false){
-            $channel = 2;
-            break;
-        }elseif(strpos($back_file,"bot_thread_whats") !== false){
-            $channel = 0;
-            break;
-        }elseif(strpos($back_file,"bot_thread_sms") !== false){
-            $channel = 8;
-            break;
-        }elseif(strpos($back_file,"bot_thread_email") !== false){
-            $channel = 4;
-            break;
-        }elseif(strpos($back_file,"bot_thread_telegram") !== false){
-            $channel = 9;
-            break;
-        }elseif(strpos($back_file,"bot_thread_facebook") !== false){
-            $channel = 6;
-            break;
-        }
-    }
+    
+    $psql = getPSQLFile();
+    $arquivo_psql = $psql[0]; 
+    $dir_psql = $psql[1];
+
+    $cmd = "$arquivo_psql $dir_psql 'select channel from chat_list where chat_list.id=$id'";
+    $channel  = system($cmd);
 
     return $channel;   
     
