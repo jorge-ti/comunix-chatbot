@@ -365,7 +365,6 @@ function botTransfer($cd_servico=0, $cifra_servico=0){
 
     }
 
-    botFinishChat();
     return;
 
 }
