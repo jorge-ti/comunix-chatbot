@@ -7,18 +7,18 @@ include_once dirname(__FILE__).'/db.php';
 
 //--------------------------------
 function botGeraLog($filename,$msg){
-    //Gera log 
-    
+    //Gera log
+
     global $id;
     $name_function = __FUNCTION__;
 
     $dia = date('Y-m-d');
     $hora = date('H:i:s');
-    
+
     $log_dir = "/var/log/chatbot_log/";
     $file_log = "$log_dir/$dia/$filename";
     $log_content = "LOG=$dia-$hora;ID_CHAT:$id;$msg\n";
-    
+
     shell_exec("mkdir -p $log_dir/$dia");
 
     if(is_dir("$log_dir/$dia")){
@@ -43,17 +43,17 @@ function botGeraLog($filename,$msg){
 
 //--------------------------------
 function botLog($log_dir, $filename, $msg){
-    //Gera log 
-    
+    //Gera log
+
     global $id;
     $name_function = __FUNCTION__;
 
     $dia = date('Y-m-d');
     $hora = date('H:i:s');
-    
+
     $file_log = "$log_dir/$dia/$filename";
     $log_content = "LOG=$dia-$hora;ID_CHAT:$id;$msg\n";
-    
+
     shell_exec("mkdir -p $log_dir/$dia");
 
     if(is_dir("$log_dir/$dia")){
@@ -144,7 +144,7 @@ function getInsertFile(){
 
 }
 
-    
+
 //--------------------------------
 function getFinishFile(){
     //Captura o local do finish_chat_end_exec.php
@@ -198,35 +198,32 @@ function getURLChat(){
 //--------------------------------
 function getChannel(){
     global $id;
+    global $db;
     $channel = "";
 
-    
-    $psql = getPSQLFile();
-    $arquivo_psql = $psql[0]; 
-    $dir_psql = $psql[1];
+    $sql="select channel from chat_list where chat_list.id=$id";
+    $results = $db->query($sql);
+    while ($row = pg_fetch_assoc($results)) {
+        $channel = $row['channel'];
+    }
+    return $channel;
 
-    $cmd = "$arquivo_psql $dir_psql 'select channel from chat_list where chat_list.id=$id'";
-    $channel  = system($cmd);
-
-    return $channel;   
-    
 }
-
 
 //--------------------------------
 function botFaq($dic_sophia, $duvida, $assunto=""){
     //Utiliza sophia para retorno sobre um dicionario
     //@param string  $duvida -> Texto que sera enviado para o dicionario da Sophia
-    //@param string  $dic_sophia -> Caminho completo do dicionario (Arquivo ".ai") 
+    //@param string  $dic_sophia -> Caminho completo do dicionario (Arquivo ".ai")
     //@param string  $assunto -> Caso tenha relacionamento com assuntos
-    
+
     global $ret_botfaq_dic;
     global $ret_botfaq_duvida;
     global $ret_botfaq_assunto;
     global $ret_botfaq_palavra;
     global $ret_botfaq_score;
     global $ret_botfaq_retorno;
-    
+
     $name_function = __FUNCTION__;
 
     $sophia_bin = "/home/extend/sophia/./sophia";
@@ -241,7 +238,7 @@ function botFaq($dic_sophia, $duvida, $assunto=""){
     if($score < 100){
         $retSophia = 0;
     }
- 
+
     $list_score = [];
     foreach ($arrResp as &$valor) {
         $arr_1 = explode(":",$valor);
@@ -276,7 +273,7 @@ function botFaq($dic_sophia, $duvida, $assunto=""){
         $retSophia = "botFac_0";
         $ret_botfaq_retorno = "botFac_0";
     }
-    
+
     botUpdateMsgSophia();
 
     return $retSophia;
@@ -311,18 +308,18 @@ function botStartChat(){
 //--------------------------------
 function botFinishChat(){
     //Finaliza atendimento
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
-    
+
     $arquivo_finish_chat = getFinishFile();
 
     sleep(3);
     $cmd="$arquivo_finish_chat '$id'";
     system($cmd);
     usleep(1000);
-    
+
     echo "LOG $name_function: $cmd \n";
     exit;
 
@@ -334,13 +331,13 @@ function botTransfer($cd_servico=0, $cifra_servico=0){
     //Transfere para atendimento humano
     //Envia para servico caso $cd_servico seja informado
     //Verifica formulario caso $cifra_servico seja informado
-    //@param integer $cd_servico -> Codigo do banco 
+    //@param integer $cd_servico -> Codigo do banco
     //@param integer $cifra_servico -> Cifra do servicco
 
     global $id;
     global $db;
     $name_function = __FUNCTION__;
-    
+
     $channel = getChannel();
 
     if($cifra_servico !=0){
@@ -349,7 +346,7 @@ function botTransfer($cd_servico=0, $cifra_servico=0){
 
     $now=time();
 
-    if($cd_servico != 0){ 
+    if($cd_servico != 0){
         sleep(1);
         $sql = "update chat_list set channel=$channel, id_user=NULL, cd_servico=$cd_servico, start_timestamp=$now where id=$id";
         $db->exec($sql);
@@ -360,11 +357,12 @@ function botTransfer($cd_servico=0, $cifra_servico=0){
         sleep(1);
         $sql = "update chat_list set channel=$channel, id_user=NULL, start_timestamp=$now where id=$id";
         $db->exec($sql);
-        
+
         echo "LOG $name_function: $sql \n";
 
     }
 
+//    botFinishChat();
     return;
 
 }
@@ -380,16 +378,15 @@ function botInsertMsg($msg){
     global $id_msg_bot;
     $name_function = __FUNCTION__;
 
-    $arquivo_insert_msg = getInsertFile();
+    $tipo = "wpp";
+    $channel = getChannel();
 
-    $back_file = debug_backtrace()[0]['file'];
-    $tipo = "";
-
-    if (strpos($back_file,"bot_thread_chat") !== false){
+    if ($channel == 2){
         $tipo = "bot";
-    }elseif(strpos($back_file,"bot_thread_whats") !== false){
+    }elseif($channel == 0){
         $tipo = "wpp";
     }
+    $arquivo_insert_msg = getInsertFile();
 
     if($tipo == 'bot'){
         $msg=str_replace("¨¨", "¨&nbsp;", $msg);
@@ -403,7 +400,7 @@ function botInsertMsg($msg){
     $id_msg_bot = exec($cmd);
     $id_msg_bot = trim($id_msg_bot);
     sleep(1);
-    
+
     echo "LOG $name_function: $cmd \n";
     return;
 
@@ -416,7 +413,7 @@ function botInsertMedia($msg,$caption=""){
     //@param string $msg -> Nome do arquivo
     //local dos arquivos: /var/www/nome_cliente/bot/media/send/
     //Passar apenas o nome do arquivo na funcao: botInsertMsg($id,"arquivo.mp4")
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
@@ -425,9 +422,9 @@ function botInsertMedia($msg,$caption=""){
     $msg = str_replace(' ','\ ',$msg);
     $cmd = "$arquivo_insert_msg '$id' '$msg' '1' '$caption'";
 
-    system($cmd);   
+    system($cmd);
     sleep(1);
-    
+
     echo "LOG $name_function: $cmd \n";
     return;
 }
@@ -435,20 +432,20 @@ function botInsertMedia($msg,$caption=""){
 
 //--------------------------------
 function botInsertPassword($msg){
-    //Adiciona menu de opcoes. 
+    //Adiciona menu de opcoes.
     //@param msg $msg -> Mensagem que será enviada ao usuario travando o Bubble no formato de senha
     //no caso de chatbot enviar um botInsertMsg("Ö!Ö"); para destravar o Bubble
 
     global $id;
     global $db;
     $name_function = __FUNCTION__;
-    
-    $back_file = debug_backtrace()[0]['file'];
-    $tipo = "";
 
-    if (strpos($back_file,"bot_thread_chat") !== false){
+    $tipo = "wpp";
+    $channel = getChannel();
+
+    if ($channel == 2){
         $tipo = "bot";
-    }elseif(strpos($back_file,"bot_thread_whats") !== false){
+    }elseif($channel == 0){
         $tipo = "wpp";
     }
 
@@ -457,38 +454,36 @@ function botInsertPassword($msg){
     }elseif($tipo == "wpp"){
         $msg = $msg;
     }
-    
+
     $arquivo_insert_msg = getInsertFile();
     $cmd = "$arquivo_insert_msg '$id' '$msg'";
 
     system($cmd);
     sleep(1);
-    
+
     echo "LOG $name_function: $cmd \n";
     return;
-   
-}
 
+}
 
 //--------------------------------
 function botInsertButtom($btn,$wpp_prefix=1){
-    //Adiciona menu de opcoes. 
+    //Adiciona menu de opcoes.
     //@param array $btn -> Array com as opcoes. O primeiro é sempre o titulo (podendo passar vazio)
     //@param integer -> Tira formatacao inicial do wpp
-    //$btn = array("Que bom te ter por aqui! Escolha uma das opções abaixo:", 
-    //             "1 - Suporte técnico", 
+    //$btn = array("Que bom te ter por aqui! Escolha uma das opções abaixo:",
+    //             "1 - Suporte técnico",
     //             "2 - Financeiro");
 
     global $id;
     global $db;
     $name_function = __FUNCTION__;
 
-    $back_file = debug_backtrace()[0]['file'];
-    $tipo = "";
-
-    if (strpos($back_file,"bot_thread_chat") !== false){
+    $tipo = "wpp";
+    $channel = getChannel();
+    if ($channel == 2){
         $tipo = "bot";
-    }elseif(strpos($back_file,"bot_thread_whats") !== false){
+    }elseif($channel == 0){
         $tipo = "wpp";
     }
 
@@ -520,7 +515,7 @@ function botInsertButtom($btn,$wpp_prefix=1){
                     $value = str_replace("$value[0] - ", "$value_n - ", $value);
                 }else{
                     if($wpp_prefix == 0 ){
-                    
+
                     }else{
                         $value = str_replace($value, $brk_1.$i.$brk_1." - ".$value, $value);
                     }
@@ -541,7 +536,7 @@ function botInsertButtom($btn,$wpp_prefix=1){
 
     system($cmd);
     sleep(1);
-    
+
     echo "LOG $name_function: $cmd \n";
     return;
 
@@ -566,9 +561,9 @@ function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $r
     global $cti;
 
     $name_function = __FUNCTION__;
-    
+
     $repeticao = 1;
-    
+
     $url_chat = $db->keyFile;
     $url_chat = explode("/",$url_chat);
     $url_chat = end($url_chat);
@@ -577,7 +572,7 @@ function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $r
     $wpp_transcript_url = "$url_chat";
     $wpp_transcript_file_stt = "/home/extend/scripts/google_stt.py";
 
-    
+
     if($repeticao_msg_rep == "" || $repeticao_msg_rep == Null ){
         $repeticao_msg_rep = "Oi você ainda está por ai? Por favor escolha uma das opções";
     }
@@ -587,7 +582,7 @@ function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $r
 
 
     start_get_full:
-    
+
     if (is_array($timeout_rep)){
         $timeout = $timeout_rep[$repeticao -1];
     }else{
@@ -611,28 +606,28 @@ function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $r
         if ($text!=""){
             $sql="update messages set sent=1 where type=0 and id_chat=$id";
             $db->exec($sql);
-			
-			if (strpos($text, $wpp_transcript_url) !== false) {
-				$separaLink = explode('/',$text);
-				$arquivoWav = $separaLink[5];
-				$separaWav = explode('.',$arquivoWav);
-				$arquivoOgg = $separaWav[0].'.ogg';
-                $local_arquivo = dirname(__FILE__)."/../media/";
-				system("mv $local_arquivo/$arquivoWav $local_arquivo/$arquivoOgg");
-				system("ffmpeg -i $local_arquivo/$arquivoOgg $local_arquivo/$arquivoWav");
-                $cmd = "$wpp_transcript_file_stt \"$local_arquivo/$arquivoWav\"";
 
-                echo "LOG $name_function: $cmd \n";
-				$trans = system($cmd);
+                        if (strpos($text, $wpp_transcript_url) !== false) {
+                                $separaLink = explode('/',$text);
+                                $arquivoWav = $separaLink[5];
+                                $separaWav = explode('.',$arquivoWav);
+                                $arquivoOgg = $separaWav[0].'.ogg';
+                        $local_arquivo = dirname(__FILE__)."/../media/";
+                                system("mv $local_arquivo/$arquivoWav $local_arquivo/$arquivoOgg");
+                                system("ffmpeg -i $local_arquivo/$arquivoOgg $local_arquivo/$arquivoWav");
+                                $cmd = "$wpp_transcript_file_stt \"$local_arquivo/$arquivoWav\"";
 
-                system("rm $local_arquivo/$arquivoOgg");
-                system("rm $local_arquivo/$arquivoWav");
+                                echo "LOG $name_function: $cmd \n";
+                                $trans = system($cmd);
 
-				echo "LOG $name_function: ARQUIVO WAV TRANSCRICAO -->  $trans\n";
-				$text = $trans;
-			}
-			
-		    echo "LOG $name_function TEXTO: $text \n";
+                                system("rm $local_arquivo/$arquivoOgg");
+                                system("rm $local_arquivo/$arquivoWav");
+
+                                echo "LOG $name_function: ARQUIVO WAV TRANSCRICAO -->  $trans\n";
+                                $text = $trans;
+                        }
+
+                    echo "LOG $name_function TEXTO: $text \n";
             $text = trim($text);
 
             return $text;
@@ -643,12 +638,13 @@ function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $r
 
             if($repeticao == $repeticao_max){
                 botInsertMsg($repeticao_msg_fim);
+                funprest_update_protocolo();
                 botFinishChat();
             }else{
                 if (is_array($repeticao_msg_rep)){
                     botInsertMsg($repeticao_msg_rep[$repeticao -1]);
                     $repeticao += 1;
-                    goto start_get_full;    
+                    goto start_get_full;
                 }else{
                     botInsertMsg($repeticao_msg_rep);
                     $repeticao += 1;
@@ -662,11 +658,24 @@ function botGetFull($repeticao_max=3, $timeout_rep=60, $repeticao_msg_rep="", $r
 
 }
 
+//--------------------------------
+function funprest_update_protocolo(){
+    global $id;
+    global $cpf;
+    global $protocolo;
+    global $integracao;
+
+    if ($protocolo != 0){
+        exec("$integracao $id 'update_ticket' $cpf $protocolo");
+    }
+
+
+}
 
 //--------------------------------
 function botGetFirstWord(){
     //Captura a primeira mensagem enviada pelo usuario
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
@@ -689,13 +698,13 @@ function botGetFirstWord(){
 //--------------------------------
 function botGetTelefone(){
     //Caputura telefone do cliente
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
-    
+
     $psql = getPSQLFile();
-    $arquivo_psql = $psql[0]; 
+    $arquivo_psql = $psql[0];
     $dir_psql = $psql[1];
 
     $cmd = "$arquivo_psql $dir_psql 'select number from chat_users,chat_list where chat_users.id=chat_list.id_chat_user and chat_list.id=$id'";
@@ -718,30 +727,30 @@ function botGetTelefone(){
 //--------------------------------
 function botGetPosicaoFila(){
     //Captura posicao da fila
-    
+
     $name_function = __FUNCTION__;
-    
+
     $channel = getChannel();
 
     $psql = getPSQLFile();
-    $arquivo_psql = $psql[0]; 
+    $arquivo_psql = $psql[0];
     $dir_psql = $psql[1];
 
     $cmd = "$arquivo_psql $dir_psql 'select count(*) from chat_list where end_timestamp is null and id_user is null and channel=$channel'";
     $totalAtendendo = system($cmd);
     $totalFila = onlyNumber(intval($totalAtendendo));
-    
+
     echo "LOG $name_function: CMD:$cmd  --  RESULT:$totalFila \n";
 
     return $totalFila;
-    
+
 }
 
 
 //--------------------------------
 function botGetConversaInteira(){
     //Captura a conversa interia dividia por "|--"
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
@@ -753,11 +762,11 @@ function botGetConversaInteira(){
     while ($row = pg_fetch_assoc($results)) {
         $msg = $msg.$row['msg']."|--";
     }
-    
+
     echo "LOG $name_function: SQL:$sql \n";
 
     return $msg;
-    
+
 }
 
 
@@ -766,7 +775,7 @@ function botGetRank($bot_ura, $bot_menu){
     //Retorna o assunto mais acessado quando utilizado pela Sophia
     //@param string  $bot_ura -> Nome da "URA"
     //@param string  $bot_menu -> Nome da "MENU"
-        
+
 
     global $id;
     global $db;
@@ -774,13 +783,13 @@ function botGetRank($bot_ura, $bot_menu){
 
     $ds_assunto = "";
 
-    $sql = "SELECT 
+    $sql = "SELECT
              tm_top_acesso.ds_bot_ura
              ,tm_top_acesso.ds_bot_menu
              ,tm_top_acesso.ds_assunto
              ,tm_top_acesso.nu_acesso
             FROM(
-             SELECT 
+             SELECT
               messages.ds_bot_ura
               ,messages.ds_bot_menu
               ,messages.js_nlp->>'ds_assunto' AS ds_assunto
@@ -790,19 +799,19 @@ function botGetRank($bot_ura, $bot_menu){
             ) AS tm_top_acesso
             WHERE tm_top_acesso.ds_bot_ura = '$bot_ura'
              AND tm_top_acesso.ds_bot_menu = '$bot_menu'
-            ORDER BY tm_top_acesso.nu_acesso DESC 
+            ORDER BY tm_top_acesso.nu_acesso DESC
             LIMIT 3";
 
     $results = $db->query($sql);
         while($row = pg_fetch_assoc($results)){
         $ds_assunto = $ds_assunto.$row['ds_assunto']."@";
-            
+
     }
 
     $ds_assunto = substr_replace($ds_assunto, "", -1);
-    
+
     echo "botGetRank: $ds_assunto \n";
-    
+
     return $ds_assunto;
 
 }
@@ -821,7 +830,7 @@ function botUpdateMsgBot($bot_ura,$bot_menu,$bot_opcao,$cti){
     global $id_msg;
 
     $name_function = __FUNCTION__;
-    
+
     if($bot_opcao == "i"){
         $bot_opcao = "Opção Inválida";
     }
@@ -847,7 +856,7 @@ function botUpdateMsgSophia(){
     global $id;
     global $db;
     global $id_msg;
-    
+
     global $ret_botfaq_dic;
     global $ret_botfaq_duvida;
     global $ret_botfaq_assunto;
@@ -953,7 +962,7 @@ function botUpdateIntegracaoHTTP($integracao_url="", $integracao_metodo="", $int
 function botUpdateCTI($cti_new){
     //Atualiza o campo cti do chat_list
     //@param string  $cti_new -> Formato INFORMACAO_PROTOCOLO_CPF
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
@@ -975,14 +984,14 @@ function botUpdateCTI($cti_new){
 function botUpdateAgent($id_user){
     //Atualiza agente que ira atender o usuario
     //@param string  $id_user -> Codigo do agente que esta no banco
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
 
-    $sql="UPDATE chat_list set id_user = '$id_user' WHERE chat_list.id = '$id';";    
+    $sql="UPDATE chat_list set id_user = '$id_user' WHERE chat_list.id = '$id';";
     $db->exec($sql);
-    
+
     $log = "CMD:$sql";
     botGeraLog($name_function,$log);
     echo "LOG $name_function: $sql \n";
@@ -997,7 +1006,7 @@ function botUpdateAgent($id_user){
 function botRegistroPesquisa($arr_pergunta, $arr_resposta){
     //Pesquisa de satisfacao
     //@param array  $arr_pergunta -> Array com perguntas
-    //@param array  $arr_resposta -> Array com respostas 
+    //@param array  $arr_resposta -> Array com respostas
 
     global $id;
     global $db;
@@ -1007,7 +1016,7 @@ function botRegistroPesquisa($arr_pergunta, $arr_resposta){
     $r = "";
     $s1 = "\"";
     $s2 = "\"";
-    
+
     foreach ($arr_pergunta as &$i) {
         $i = str_replace(",", "\,",$i);
         $p = $p.$s1.$i.$s2.",";
@@ -1042,7 +1051,7 @@ function botRegistroPesquisa($arr_pergunta, $arr_resposta){
 //--------------------------------
 function botVerificaHorarioChat(){
     //Verifica horario de entrada do Chat
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
@@ -1052,7 +1061,7 @@ function botVerificaHorarioChat(){
     $sql="select msg,start_hr,end_hr from schedule where day_number=$diasemana_numero";
     $db->exec($sql);
     $results = $db->query($sql);
-    
+
     if($results == "" || $results == Null){
         echo "LOG $name_function: SEM FORMULARIO OU VINDO VAZIO DO BANCO";
         return;
@@ -1064,7 +1073,7 @@ function botVerificaHorarioChat(){
         $msg=$row['msg'];
     }
 
-    
+
     $now = date('H:i:s');
 
     echo "LOG $name_function: DIA SEMANA -> $diasemana_numero  HORA -> $now  CHAT_HORA_INICIO -> $start_hr  CHAT_HORA_FIM -> $end_hr \n";
@@ -1083,7 +1092,7 @@ function botVerificaHorarioChat(){
 //--------------------------------
 function botVerificaHorarioFormulario($channel,$cifra_servico){
     //Verifica horario do Servico
-    
+
     global $id;
     global $db;
     $name_function = __FUNCTION__;
@@ -1110,7 +1119,7 @@ function botVerificaHorarioFormulario($channel,$cifra_servico){
     }
 
     //=================================================================================================================
-    
+
     $arquivo_json = "/home/extend/servico/$cifra_servico/$cifra_servico.json";
     $lista = file($arquivo_json);
 
@@ -1120,7 +1129,7 @@ function botVerificaHorarioFormulario($channel,$cifra_servico){
         botGeraLog($name_function,$log);
         return;
     }
-    
+
     $result = $lista[0];
 
     if($result != ''){
@@ -1344,4 +1353,3 @@ function botVerificaHorarioFormulario($channel,$cifra_servico){
 
 
 ?>
-
